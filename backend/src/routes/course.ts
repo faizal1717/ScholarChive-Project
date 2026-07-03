@@ -98,11 +98,6 @@ import Assignment from "../models/assignment";
 
 const router = express.Router();
 
-/*
-|--------------------------------------------------------------------------
-| GET Semua Mata Kuliah
-|--------------------------------------------------------------------------
-*/
 router.get("/", async (req, res) => {
   try {
     const courses = await Course.find()
@@ -119,11 +114,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| Tambah Mata Kuliah
-|--------------------------------------------------------------------------
-*/
+
 router.post("/", async (req, res) => {
   try {
     const { name, userId, semesterId } = req.body;
@@ -144,11 +135,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| Detail Mata Kuliah
-|--------------------------------------------------------------------------
-*/
 router.get("/detail/:id", async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
@@ -169,11 +155,6 @@ router.get("/detail/:id", async (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| Semua Mata Kuliah Milik User
-|--------------------------------------------------------------------------
-*/
 router.get("/user/:userId", async (req, res) => {
   try {
     const courses = await Course.find({
@@ -190,11 +171,6 @@ router.get("/user/:userId", async (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| Semua Mata Kuliah Berdasarkan Semester
-|--------------------------------------------------------------------------
-*/
 router.get("/:semesterId", async (req, res) => {
   try {
     const courses = await Course.find({
@@ -211,11 +187,7 @@ router.get("/:semesterId", async (req, res) => {
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| Hapus Mata Kuliah
-|--------------------------------------------------------------------------
-*/
+
 router.delete("/:id", async (req, res) => {
   try {
     const courseId = req.params.id;
