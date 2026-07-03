@@ -50,7 +50,7 @@ export default function SliderSemesters({ reload }: Props) {
 
   const fetchSemesters = async (userId: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/semesters/${userId}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/semesters/${userId}`);
       const data = await res.json();
       setSemesters(data);
     } catch (error) {
@@ -62,7 +62,7 @@ export default function SliderSemesters({ reload }: Props) {
     if (!confirmId) return;
     setDeleting(true);
     try {
-      const res = await fetch(`http://localhost:3001/api/semesters/${confirmId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/semesters/${confirmId}`, {
         method: "DELETE",
       });
 

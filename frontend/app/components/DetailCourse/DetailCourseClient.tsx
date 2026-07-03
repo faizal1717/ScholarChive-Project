@@ -20,6 +20,7 @@ import toast from "react-hot-toast";
 import FormModule from "@/app/components/Home/RightSide/Modules/FormModule";
 import FormAssignment from "@/app/components/Home/RightSide/Assignment/FormAssignment";
 import PreviewModal from "@/app/components/PreviewModal/PreviewModal";
+import { useTranslations } from "next-intl";
 
 interface Module {
   _id: string;
@@ -67,7 +68,17 @@ export default function Page() {
 
   const [courseName, setCourseName] = useState<string>("");
   const [semesterId, setSemesterId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"modul" | "tugas">("modul");
+  const [activeTab, setActiveTab] = useState<"module" | "assignment">("module");
+  const tabParam = searchParams.get("tab");
+
+  useEffect(() => {
+    if (tabParam === "assignment" || tabParam === "module") {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  const t = useTranslations("DetailCourse");
+  const tCommon = useTranslations("Common");
   const [modules, setModules] = useState<Module[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -94,8 +105,8 @@ export default function Page() {
   const getFullFileUrl = (url?: string) => {
     if (!url) return "";
     if (url.startsWith("http")) return url;
-    if (url.startsWith("/")) return `http://localhost:3001${url}`;
-    return `http://localhost:3001/${url}`;
+    if (url.startsWith("/")) return `${process.env.NEXT_PUBLIC_API_URL}${url}`;
+    return `${process.env.NEXT_PUBLIC_API_URL}/${url}`;
   };
 
   useEffect(() => {
@@ -114,23 +125,23 @@ export default function Page() {
     setDeleting(true);
     try {
       const endpoint = confirmDelete.type === "module" ? "modules" : "assignments";
-      const res = await fetch(`http://localhost:3001/api/${endpoint}/${confirmDelete.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/${endpoint}/${confirmDelete.id}`, {
         method: "DELETE",
       });
 
       if (res.ok) {
-        toast.success(`${confirmDelete.type === "module" ? "Modul" : "Tugas"} berhasil dihapus`);
+        toast.success(`${confirmDelete.type === "module" ? t("tabModule") : t("tabAssignment")} ${t("deleteSuccess")}`);
         if (confirmDelete.type === "module") {
           setModules((prev) => prev.filter((item) => (item._id) !== confirmDelete.id));
         } else {
           setAssignments((prev) => prev.filter((item) => (item._id) !== confirmDelete.id));
         }
       } else {
-        toast.error(`Gagal menghapus ${confirmDelete.type === "module" ? "modul" : "tugas"}`);
+        toast.error(`${t("deleteFailed")} ${confirmDelete.type === "module" ? t("tabModule").toLowerCase() : t("tabAssignment").toLowerCase()}`);
       }
     } catch (error) {
       console.log(error);
-      toast.error("Server error");
+      toast.error(tCommon("serverError"));
     } finally {
       setDeleting(false);
       setConfirmDelete(null);
@@ -139,7 +150,7 @@ export default function Page() {
 
   const fetchCourseDetails = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/courses/detail/${id}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses/detail/${id}`);
       if (res.ok) {
         const data = await res.json();
         setCourseName(data.name);
@@ -152,7 +163,7 @@ export default function Page() {
 
   const fetchModules = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/modules/${id}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/${id}`);
       if (res.ok) {
         const data = await res.json();
         setModules(data);
@@ -164,7 +175,7 @@ export default function Page() {
 
   const fetchAssignments = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/assignments/${id}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/assignments/${id}`);
       if (res.ok) {
         const data = await res.json();
         setAssignments(data);
@@ -252,51 +263,51 @@ export default function Page() {
         </Link>
         <div>
           <h1 className="text-xl font-bold text-gray-800 md:text-2xl">
-            {courseName || "Detail Mata Kuliah"}
+            {courseName || t("defaultTitle")}
           </h1>
-          <p className="text-sm text-gray-500">Kelola modul pembelajaran dan tugas kuliah</p>
+          <p className="text-sm text-gray-500">{t("subtitle")}</p>
         </div>
       </div>
 
       <div className="mt-8 flex border-b border-gray-300">
         <button
-          onClick={() => setActiveTab("modul")}
+          onClick={() => setActiveTab("module")}
           className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm border-b-2 transition-all cursor-pointer ${
-            activeTab === "modul"
+            activeTab === "module"
               ? "border-[#0D9488] text-[#0D9488]"
               : "border-transparent text-gray-500 hover:text-gray-700"
           }`}
         >
           <LayersIcon size={18} />
-          Modul
+          {t("tabModule")}
         </button>
         <button
-          onClick={() => setActiveTab("tugas")}
+          onClick={() => setActiveTab("assignment")}
           className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm border-b-2 transition-all cursor-pointer ${
-            activeTab === "tugas"
+            activeTab === "assignment"
               ? "border-[#0D9488] text-[#0D9488]"
               : "border-transparent text-gray-500 hover:text-gray-700"
           }`}
         >
           <ClipboardListIcon size={18} />
-          Tugas
+          {t("tabAssignment")}
         </button>
       </div>
 
       <section className="mt-6">
-        {activeTab === "modul" ? (
+        {activeTab === "module" ? (
           <div>
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-800">Daftar Modul</h2>
-                <p className="text-sm text-gray-500">Materi pembelajaran untuk mata kuliah ini</p>
+                <h2 className="text-lg font-semibold text-gray-800">{t("moduleListTitle")}</h2>
+                <p className="text-sm text-gray-500">{t("moduleListDesc")}</p>
               </div>
               <button
                 onClick={() => setOpenAddModule(true)}
                 className="flex gap-2 items-center border border-[#0D9488] text-[#0D9488] px-4 py-2.5 rounded-lg hover:bg-[#0D9488]/5 transition font-medium text-sm cursor-pointer"
               >
                 <PlusIcon size={16} />
-                Tambah Modul
+                {t("addModule")}
               </button>
             </div>
 
@@ -305,9 +316,9 @@ export default function Page() {
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#0D9488]/10">
                   <LayersIcon width={32} height={32} className="text-[#0D9488]" />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-gray-800">Belum Ada Modul</h3>
+                <h3 className="mt-4 text-lg font-semibold text-gray-800">{t("noModules")}</h3>
                 <p className="mt-2 text-sm text-gray-500 max-w-sm">
-                  Tambahkan modul untuk menyimpan catatan, rangkuman materi, dan slide presentasi.
+                  {t("noModulesDesc")}
                 </p>
               </div>
             ) : (
@@ -342,7 +353,7 @@ export default function Page() {
                               className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 transition-colors duration-150 cursor-pointer font-semibold"
                             >
                               <Trash2Icon size={14} />
-                              Hapus
+                              {tCommon("delete")}
                             </button>
                           </div>
                         )}
@@ -378,12 +389,12 @@ export default function Page() {
                       {mod.fileUrl ? (
                         <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#f0fdfb] border border-[#d1fae5] rounded-lg">
                           <FileTextIcon size={13} className="text-[#0D9488] flex-shrink-0" />
-                          <span className="text-xs text-[#0D9488] truncate flex-1">File tersedia</span>
+                          <span className="text-xs text-[#0D9488] truncate flex-1">{t("fileAvailable")}</span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-lg">
                           <FileTextIcon size={13} className="text-gray-400 flex-shrink-0" />
-                          <span className="text-xs text-gray-400">Tidak ada file</span>
+                          <span className="text-xs text-gray-400">{t("noFile")}</span>
                         </div>
                       )}
 
@@ -395,7 +406,7 @@ export default function Page() {
                             className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-[#0D9488] text-[#0D9488] text-xs font-semibold hover:bg-[#f0fdfb] transition cursor-pointer"
                           >
                             <EyeIcon size={13} />
-                            Pratinjau
+                            {t("preview")}
                           </button>
                           <button
                             onClick={async () => {
@@ -411,7 +422,7 @@ export default function Page() {
                             ) : (
                               <DownloadIcon size={13} />
                             )}
-                            Unduh
+                            {t("download")}
                           </button>
                         </div>
                       )}
@@ -425,15 +436,15 @@ export default function Page() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-800">Daftar Tugas</h2>
-                <p className="text-sm text-gray-500">Tugas dan latihan untuk mengukur pemahaman</p>
+                <h2 className="text-lg font-semibold text-gray-800">{t("assignmentListTitle")}</h2>
+                <p className="text-sm text-gray-500">{t("assignmentListDesc")}</p>
               </div>
               <button
                 onClick={() => setOpenAddAssignment(true)}
                 className="flex gap-2 items-center border border-[#0D9488] text-[#0D9488] px-4 py-2.5 rounded-lg hover:bg-[#0D9488]/5 transition font-medium text-sm cursor-pointer"
               >
                 <PlusIcon size={16} />
-                Tambah Tugas
+                {t("addAssignment")}
               </button>
             </div>
 
@@ -442,9 +453,9 @@ export default function Page() {
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#0D9488]/10">
                   <ClipboardListIcon width={32} height={32} className="text-[#0D9488]" />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-gray-800">Belum Ada Tugas</h3>
+                <h3 className="mt-4 text-lg font-semibold text-gray-800">{t("noAssignments")}</h3>
                 <p className="mt-2 text-sm text-gray-500 max-w-sm">
-                  Tambahkan tugas baru untuk mengelola deadline dan melacak status penyelesaiannya.
+                  {t("noAssignmentsDesc")}
                 </p>
               </div>
             ) : (
@@ -479,7 +490,7 @@ export default function Page() {
                               className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 transition-colors duration-150 cursor-pointer font-semibold"
                             >
                               <Trash2Icon size={14} />
-                              Hapus
+                              {tCommon("delete")}
                             </button>
                           </div>
                         )}
@@ -515,12 +526,12 @@ export default function Page() {
                       {ass.fileUrl ? (
                         <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#f0fdfb] border border-[#d1fae5] rounded-lg">
                           <FileTextIcon size={13} className="text-[#0D9488] flex-shrink-0" />
-                          <span className="text-xs text-[#0D9488] truncate flex-1">File tersedia</span>
+                          <span className="text-xs text-[#0D9488] truncate flex-1">{t("fileAvailable")}</span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-lg">
                           <FileTextIcon size={13} className="text-gray-400 flex-shrink-0" />
-                          <span className="text-xs text-gray-400">Tidak ada file</span>
+                          <span className="text-xs text-gray-400">{t("noFile")}</span>
                         </div>
                       )}
 
@@ -532,7 +543,7 @@ export default function Page() {
                             className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-[#0D9488] text-[#0D9488] text-xs font-semibold hover:bg-[#f0fdfb] transition cursor-pointer"
                           >
                             <EyeIcon size={13} />
-                            Pratinjau
+                            {t("preview")}
                           </button>
                           <button
                             onClick={async () => {
@@ -548,7 +559,7 @@ export default function Page() {
                             ) : (
                               <DownloadIcon size={13} />
                             )}
-                            Unduh
+                            {t("download")}
                           </button>
                         </div>
                       )}
@@ -592,7 +603,7 @@ export default function Page() {
             <div className="flex items-start justify-between mb-4">
               <div className="flex justify-center tems-center gap-3">
                 <div>
-                  <h3 className="font-bold text-gray-800 w-full flex justify-center text-base">Hapus {confirmDelete.type === "module" ? "Modul" : "Tugas"}</h3>
+                  <h3 className="font-bold text-gray-800 w-full flex justify-center text-base">{confirmDelete.type === "module" ? t("deleteModule") : t("deleteAssignment")}</h3>
                 </div>
               </div>
               <button
@@ -604,9 +615,9 @@ export default function Page() {
             </div>
             <div className="bg-gray-50 rounded-lg px-4 py-3 mb-5">
               <p className="text-sm text-gray-600">
-                Yakin ingin menghapus {confirmDelete.type === "module" ? "modul" : "tugas"}{" "}
+                {confirmDelete.type === "module" ? t("deleteModuleConfirm") : t("deleteAssignmentConfirm")}{" "}
                 <span className="font-semibold text-gray-800">"{confirmDelete.name}"</span>?
-                Tindakan ini tidak dapat dibatalkan.
+                {" "}{t("deleteIrreversible")}
               </p>
             </div>
             <div className="flex gap-3">
@@ -614,7 +625,7 @@ export default function Page() {
                 onClick={() => setConfirmDelete(null)}
                 className="flex-1 py-2.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
               >
-                Batal
+                {tCommon("cancel")}
               </button>
               <button
                 onClick={handleDeleteConfirmed}
@@ -624,12 +635,12 @@ export default function Page() {
                 {deleting ? (
                   <>
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Menghapus...
+                    {tCommon("deleting")}
                   </>
                 ) : (
                   <>
                     <Trash2Icon size={15} />
-                    Hapus
+                    {tCommon("delete")}
                   </>
                 )}
               </button>

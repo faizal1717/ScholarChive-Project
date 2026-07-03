@@ -63,7 +63,7 @@ export default function ProfilePage() {
     }
     const fetchUserDetails = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/auth/${parsedUser.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/${parsedUser.id}`);
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
@@ -82,10 +82,10 @@ export default function ProfilePage() {
     const fetchStats = async () => {
       try {
         const [semRes, courseRes, moduleRes, assignRes] = await Promise.all([
-          fetch(`http://localhost:3001/api/semesters/${parsedUser.id}`),
-          fetch(`http://localhost:3001/api/courses/user/${parsedUser.id}`),
-          fetch(`http://localhost:3001/api/modules/user/${parsedUser.id}`),
-          fetch(`http://localhost:3001/api/assignments/user/${parsedUser.id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/semesters/${parsedUser.id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses/user/${parsedUser.id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/user/${parsedUser.id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/assignments/user/${parsedUser.id}`),
         ]);
 
         const [sems, courses, modules, assignments] = await Promise.all([

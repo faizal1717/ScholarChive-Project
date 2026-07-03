@@ -21,7 +21,7 @@ export default function ModalSemester({ open, onClose, onSuccess }: Props) {
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-      const res = await fetch("http://localhost:3001/api/semesters", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/semesters`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

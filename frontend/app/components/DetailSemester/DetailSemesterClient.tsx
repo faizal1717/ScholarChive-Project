@@ -40,7 +40,7 @@ export default function Page() {
     if (!confirmDelete) return;
     setDeleting(true);
     try {
-      const res = await fetch(`http://localhost:3001/api/courses/${confirmDelete.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses/${confirmDelete.id}`, {
         method: "DELETE",
       });
 
@@ -61,7 +61,7 @@ export default function Page() {
 
   const fetchCourses = async (semId: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/courses/${semId}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses/${semId}`);
       if (res.ok) {
         const data = await res.json();
         setCourses(data);
@@ -73,7 +73,7 @@ export default function Page() {
 
   const fetchSemesterDetails = async (semId: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/semesters/detail/${semId}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/semesters/detail/${semId}`);
       if (res.ok) {
         const data = await res.json();
         setSemesterName(data.name);
@@ -93,7 +93,7 @@ export default function Page() {
     if (!semesterId) {
       const fetchSemestersAndRedirect = async () => {
         try {
-          const res = await fetch(`http://localhost:3001/api/semesters/${user.id}`);
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/semesters/${user.id}`);
           if (res.ok) {
             const data = await res.json();
             if (data && data.length > 0) {

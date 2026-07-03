@@ -65,7 +65,7 @@ export default function SettingsPage() {
     }
     setSavingProfile(true);
     try {
-      const res = await fetch(`http://localhost:3001/api/auth/update/${user.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/update/${user.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, phone }),
@@ -101,7 +101,7 @@ export default function SettingsPage() {
     }
     setSavingPassword(true);
     try {
-      const res = await fetch(`http://localhost:3001/api/auth/change-password/${user.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/change-password/${user.id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ oldPassword, newPassword }),

@@ -12,6 +12,7 @@ import {
   DownloadIcon,
 } from "lucide-react";
 import PreviewModal from "@/app/components/PreviewModal/PreviewModal";
+import { useTranslations } from "next-intl";
 
 interface Assignment {
   _id: string;
@@ -25,8 +26,8 @@ interface Assignment {
 const getFullFileUrl = (url?: string) => {
   if (!url) return "";
   if (url.startsWith("http")) return url;
-  if (url.startsWith("/")) return `http://localhost:3001${url}`;
-  return `http://localhost:3001/${url}`;
+  if (url.startsWith("/")) return `${process.env.NEXT_PUBLIC_API_URL}${url}`;
+  return `${process.env.NEXT_PUBLIC_API_URL}/${url}`;
 };
 
 const getFileExtension = (url?: string) => {
@@ -56,6 +57,7 @@ export default function AssignmentsPage() {
   const router = useRouter();
   const params = useParams();
   const locale = params?.locale || "id";
+  const t = useTranslations("Assignments");
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -79,7 +81,7 @@ export default function AssignmentsPage() {
 
     const fetchAssignments = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/assignments/user/${user.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/assignments/user/${user.id}`);
         if (res.ok) {
           const data = await res.json();
           setAssignments(data);
@@ -128,7 +130,7 @@ export default function AssignmentsPage() {
   assignments.forEach((ass) => {
     const course = ass.courseId as { _id: string; name: string };
     const courseId = course?._id || "unknown";
-    const courseName = course?.name || "Mata Kuliah Tidak Diketahui";
+    const courseName = course?.name || t("unknownCourse");
     if (!grouped[courseId]) {
       grouped[courseId] = { courseName, courseId, assignments: [] };
     }
@@ -142,15 +144,15 @@ export default function AssignmentsPage() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#0D9488]/10">
             <ClipboardListIcon width={32} height={32} className="text-[#0D9488]" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-800">Belum Ada Tugas</h3>
+          <h3 className="mt-4 text-lg font-semibold text-gray-800">{t("noAssignments")}</h3>
           <p className="mt-2 text-sm text-gray-500 max-w-sm">
-            Tambahkan tugas di dalam mata kuliah untuk mengelola deadline dan melacak penyelesaian.
+            {t("noAssignmentsDesc")}
           </p>
           <button
             onClick={() => router.push(`/${locale}`)}
             className="mt-6 px-6 py-2.5 bg-[#0D9488] text-white rounded-lg font-semibold hover:bg-[#0b7d72] transition cursor-pointer"
           >
-            Kembali ke Dashboard
+            {t("backToDashboard")}
           </button>
         </div>
       ) : (
@@ -169,7 +171,7 @@ export default function AssignmentsPage() {
                   {group.courseName}
                 </Link>
                 <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
-                  {group.assignments.length} tugas
+                  {t("assignmentCount", { count: group.assignments.length })}
                 </span>
               </div>
 
@@ -215,24 +217,24 @@ export default function AssignmentsPage() {
                       {ass.fileUrl ? (
                         <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#f0fdfb] border border-[#d1fae5] rounded-lg">
                           <FileTextIcon size={13} className="text-[#0D9488] flex-shrink-0" />
-                          <span className="text-xs text-[#0D9488] truncate flex-1">File tersedia</span>
+                          <span className="text-xs text-[#0D9488] truncate flex-1">{t("fileAvailable")}</span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-lg">
                           <FileTextIcon size={13} className="text-gray-400 flex-shrink-0" />
-                          <span className="text-xs text-gray-400">Tidak ada file</span>
+                          <span className="text-xs text-gray-400">{t("noFile")}</span>
                         </div>
                       )}
 
                       {/* Action buttons */}
                       {ass.fileUrl && (
                         <div className="flex gap-2">
-                          <button
+                           <button
                             onClick={() => handleOpenPreview(fileUrl, ass.name)}
                             className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-[#0D9488] text-[#0D9488] text-xs font-semibold hover:bg-[#f0fdfb] transition cursor-pointer"
                           >
                             <EyeIcon size={13} />
-                            Pratinjau
+                            {t("preview")}
                           </button>
                           <button
                             onClick={async () => {
@@ -248,7 +250,7 @@ export default function AssignmentsPage() {
                             ) : (
                               <DownloadIcon size={13} />
                             )}
-                            Unduh
+                            {t("download")}
                           </button>
                         </div>
                       )}

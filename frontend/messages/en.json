@@ -134,6 +134,10 @@
     "loginFailed": "Incorrect email or password",
     "enterEmail": "Please enter your email",
     "allFieldsRequired": "All fields are required",
+    "errorEmailEmpty": "Email cannot be empty",
+    "errorPasswordEmpty": "Password cannot be empty",
+    "errorOtpEmpty": "OTP cannot be empty",
+    "errorNewPasswordEmpty": "New password cannot be empty",
     "heroTagline": "Store and Manage Your Learning.",
     "heroDesc": "All modules, assignments, and materials stored neatly in one place."
   },
@@ -156,6 +160,11 @@
     "registerSuccess": "Registration successful!",
     "registerFailed": "Registration failed",
     "confirmMismatch": "Password confirmation does not match",
+    "errorNameEmpty": "Name cannot be empty",
+    "errorEmailEmpty": "Email cannot be empty",
+    "errorPhoneEmpty": "Phone number cannot be empty",
+    "errorPasswordEmpty": "Password cannot be empty",
+    "errorConfirmEmpty": "Password confirmation cannot be empty",
     "heroTagline": "Register and Start Your Learning Journey.",
     "heroDesc": "All modules, assignments, and materials stored neatly in one place."
   },
@@ -203,7 +212,8 @@
     "addCourse": "Add Course",
     "addSuccess": "Course added successfully",
     "addFailed": "Failed to add",
-    "courseNamePlaceholder": "Course Name"
+    "courseNamePlaceholder": "Course Name",
+    "courseNameEmpty": "Course name cannot be empty"
   },
   "FormModule": {
     "addModule": "Add New Module",
@@ -246,5 +256,65 @@
     "deleteSemesterTitle": "Delete Semester",
     "deleteSemesterConfirm1": "Are you sure you want to delete the semester ",
     "deleteSemesterConfirm2": "? All course data in this semester will also be deleted."
+  },
+  "Assignments": {
+    "noAssignments": "No Assignments Yet",
+    "noAssignmentsDesc": "Add assignments inside a course to manage deadlines and track completion.",
+    "backToDashboard": "Back to Dashboard",
+    "unknownCourse": "Unknown Course",
+    "assignmentCount": "{count} assignment",
+    "fileAvailable": "File available",
+    "noFile": "No file",
+    "preview": "Preview",
+    "download": "Download"
+  },
+  "Modules": {
+    "noModules": "No Modules Yet",
+    "noModulesDesc": "Add modules inside a course to save notes and learning materials.",
+    "backToDashboard": "Back to Dashboard",
+    "unknownCourse": "Unknown Course",
+    "moduleCount": "{count} module",
+    "fileAvailable": "File available",
+    "noFile": "No file",
+    "preview": "Preview",
+    "download": "Download"
+  },
+  "DetailCourse": {
+    "defaultTitle": "Course Detail",
+    "subtitle": "Manage learning modules and course assignments",
+    "tabModule": "Modules",
+    "tabAssignment": "Assignments",
+    "moduleListTitle": "Module List",
+    "moduleListDesc": "Learning materials for this course",
+    "addModule": "Add Module",
+    "noModules": "No Modules Yet",
+    "noModulesDesc": "Add modules to save notes, summaries, and presentation slides.",
+    "assignmentListTitle": "Assignment List",
+    "assignmentListDesc": "Assignments and exercises to measure understanding",
+    "addAssignment": "Add Assignment",
+    "noAssignments": "No Assignments Yet",
+    "noAssignmentsDesc": "Add new assignments to manage deadlines and track completion status.",
+    "fileAvailable": "File available",
+    "noFile": "No file",
+    "preview": "Preview",
+    "download": "Download",
+    "deleteModule": "Delete Module",
+    "deleteAssignment": "Delete Assignment",
+    "deleteModuleConfirm": "Are you sure you want to delete the module",
+    "deleteAssignmentConfirm": "Are you sure you want to delete the assignment",
+    "deleteIrreversible": "This action cannot be undone.",
+    "deleteSuccess": "deleted successfully",
+    "deleteFailed": "Failed to delete",
+    "delete": "Delete"
+  },
+  "Search": {
+    "placeholder": "Search semesters, courses, modules, or assignments...",
+    "searching": "Searching...",
+    "noResults": "No results found for \"{query}\"",
+    "semesters": "Semesters",
+    "courses": "Courses",
+    "modules": "Modules",
+    "assignments": "Assignments",
+    "loginRequired": "Please log in to search."
   }
 }

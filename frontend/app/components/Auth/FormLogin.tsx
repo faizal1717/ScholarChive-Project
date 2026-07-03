@@ -14,20 +14,34 @@ export default function FormLogin() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<{email?: string, password?: string}>({});
 
   // Forgot password states
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [forgotErrors, setForgotErrors] = useState<{email?: string, otp?: string, password?: string}>({});
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Client-side validation
+    const newErrors: {email?: string, password?: string} = {};
+    if (!email.trim()) newErrors.email = t("errorEmailEmpty");
+    if (!password.trim()) newErrors.password = t("errorPasswordEmpty");
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    setErrors({});
 
     try {
-      const res = await fetch("http://localhost:3001/api/auth/login", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,13 +55,13 @@ export default function FormLogin() {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(t("loginSuccess") || "Login berhasil");
+        toast.success(t("loginSuccess"));
         localStorage.setItem("user", JSON.stringify(data.user));
         setTimeout(() => {
           router.push(`/${locale}`);
         }, 1500);
       } else {
-        toast.error(data.message || t("loginFailed") || "Email atau password salah");
+        toast.error(data.message || t("loginFailed"));
       }
     } catch (error) {
       console.log(error);
@@ -57,14 +71,16 @@ export default function FormLogin() {
 
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!forgotEmail.trim()) {
-      toast.error(t("enterEmail") || "Silakan masukkan email Anda");
+      setForgotErrors({ email: t("enterEmail") });
       return;
     }
+    setForgotErrors({});
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/api/auth/forgot-password", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: forgotEmail }),
@@ -73,9 +89,9 @@ export default function FormLogin() {
 
       if (res.ok) {
         setOtpSent(true);
-        toast.success(data.message || t("otpSentSuccess") || "Kode OTP telah dikirim ke email");
+        toast.success(data.message || t("otpSentSuccess"));
       } else {
-        toast.error(data.message || t("otpSendFailed") || "Gagal mengirim OTP");
+        toast.error(data.message || t("otpSendFailed"));
       }
     } catch (error) {
       console.error(error);
@@ -87,14 +103,20 @@ export default function FormLogin() {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otp.trim() || !newPassword.trim()) {
-      toast.error(t("allFieldsRequired") || "Semua kolom harus diisi");
+    
+    const newErrors: {otp?: string, password?: string} = {};
+    if (!otp.trim()) newErrors.otp = t("errorOtpEmpty");
+    if (!newPassword.trim()) newErrors.password = t("errorNewPasswordEmpty");
+    
+    if (Object.keys(newErrors).length > 0) {
+      setForgotErrors(newErrors);
       return;
     }
+    setForgotErrors({});
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/api/auth/reset-password", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -106,14 +128,14 @@ export default function FormLogin() {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(t("resetSuccess") || "Password berhasil direset! Silakan login.");
+        toast.success(t("resetSuccess"));
         setShowForgot(false);
         setOtpSent(false);
         setForgotEmail("");
         setOtp("");
         setNewPassword("");
       } else {
-        toast.error(data.message || t("resetFailed") || "Gagal mereset password");
+        toast.error(data.message || t("resetFailed"));
       }
     } catch (error) {
       console.error(error);
@@ -144,11 +166,16 @@ export default function FormLogin() {
                   id="forgot-email"
                   type="email"
                   value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
+                  onChange={(e) => {
+                    setForgotEmail(e.target.value);
+                    if (forgotErrors.email) setForgotErrors({ ...forgotErrors, email: undefined });
+                  }}
                   placeholder={t("forgotEmailPlaceholder")}
-                  className="text-xs text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488]"
-                  required
+                  className={`text-xs text-gray-700 p-3 w-full rounded border ${forgotErrors.email ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none`}
                 />
+                {forgotErrors.email && (
+                  <p className="text-red-500 text-[11px] mt-1 font-medium">{forgotErrors.email}</p>
+                )}
               </div>
 
               <button
@@ -183,12 +210,17 @@ export default function FormLogin() {
                   id="forgot-otp"
                   type="text"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
+                  onChange={(e) => {
+                    setOtp(e.target.value);
+                    if (forgotErrors.otp) setForgotErrors({ ...forgotErrors, otp: undefined });
+                  }}
                   placeholder={t("otpPlaceholder")}
-                  className="text-xs text-center font-mono tracking-widest text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488]"
+                  className={`text-xs text-center font-mono tracking-widest text-gray-700 p-3 w-full rounded border ${forgotErrors.otp ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none`}
                   maxLength={6}
-                  required
                 />
+                {forgotErrors.otp && (
+                  <p className="text-red-500 text-[11px] mt-1 font-medium text-center">{forgotErrors.otp}</p>
+                )}
               </div>
 
               <div>
@@ -197,11 +229,16 @@ export default function FormLogin() {
                   id="forgot-new-password"
                   type="password"
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    if (forgotErrors.password) setForgotErrors({ ...forgotErrors, password: undefined });
+                  }}
                   placeholder={t("newPasswordPlaceholder")}
-                  className="text-xs text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488]"
-                  required
+                  className={`text-xs text-gray-700 p-3 w-full rounded border ${forgotErrors.password ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none`}
                 />
+                {forgotErrors.password && (
+                  <p className="text-red-500 text-[11px] mt-1 font-medium">{forgotErrors.password}</p>
+                )}
               </div>
 
               <button
@@ -266,11 +303,16 @@ export default function FormLogin() {
               id="login-email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) setErrors({ ...errors, email: undefined });
+              }}
               placeholder={t("emailPlaceholder")}
-              className="text-xs text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488]"
-              required
+              className={`text-xs text-gray-700 p-3 w-full rounded border ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none`}
             />
+            {errors.email && (
+              <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.email}</p>
+            )}
           </div>
           <div>
             <span className="text-gray-700 text-xs pb-1 block font-semibold">{t("password")} <span className="text-red-400">*</span></span>
@@ -278,11 +320,16 @@ export default function FormLogin() {
               id="login-password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (errors.password) setErrors({ ...errors, password: undefined });
+              }}
               placeholder={t("passwordPlaceholder")}
-              className="text-xs text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488]"
-              required
+              className={`text-xs text-gray-700 p-3 w-full rounded border ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none`}
             />
+            {errors.password && (
+              <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.password}</p>
+            )}
           </div>
           <div className="flex w-full justify-end text-xs text-[#0D9488]">
             <button
@@ -319,3 +366,4 @@ export default function FormLogin() {
     </div>
   );
 }
+

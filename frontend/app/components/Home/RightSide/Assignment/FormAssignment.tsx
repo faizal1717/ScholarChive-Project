@@ -14,6 +14,7 @@ interface Props {
 
 export default function FormAssignment({ open, onClose, courseId, onSuccess }: Props) {
   const [name, setName] = useState("");
+  const [errorName, setErrorName] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [isDragActive, setIsDragActive] = useState(false);
@@ -44,6 +45,7 @@ export default function FormAssignment({ open, onClose, courseId, onSuccess }: P
       if (!name.trim()) {
         const baseName = selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.')) || selectedFile.name;
         setName(baseName);
+        if (errorName) setErrorName("");
       }
     }
   };
@@ -54,6 +56,7 @@ export default function FormAssignment({ open, onClose, courseId, onSuccess }: P
     if (selectedFile && !name.trim()) {
       const baseName = selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.')) || selectedFile.name;
       setName(baseName);
+      if (errorName) setErrorName("");
     }
   };
 
@@ -81,7 +84,7 @@ export default function FormAssignment({ open, onClose, courseId, onSuccess }: P
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      toast.error(t("assignmentNameEmpty"));
+      setErrorName(t("assignmentNameEmpty") || "Nama tugas tidak boleh kosong");
       return;
     }
 
@@ -99,7 +102,7 @@ export default function FormAssignment({ open, onClose, courseId, onSuccess }: P
         formData.append("file", file);
       }
 
-      const res = await fetch("http://localhost:3001/api/assignments", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/assignments`, {
         method: "POST",
         body: formData,
       });
@@ -107,6 +110,7 @@ export default function FormAssignment({ open, onClose, courseId, onSuccess }: P
       if (res.ok) {
         toast.success(t("addSuccess"));
         setName("");
+        setErrorName("");
         setDueDate("");
         setFile(null);
         onClose();
@@ -138,14 +142,20 @@ export default function FormAssignment({ open, onClose, courseId, onSuccess }: P
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-              {t("assignmentName")}
+              {t("assignmentName")} <span className="text-red-400">*</span>
             </label>
             <input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errorName) setErrorName("");
+              }}
               placeholder={t("assignmentNamePlaceholder")}
-              className="w-full border rounded-lg p-3 focus:outline-0 border-gray-300 focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488]"
+              className={`w-full border rounded-lg p-3 focus:outline-0 ${errorName ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488]'}`}
             />
+            {errorName && (
+              <p className="text-red-500 text-[11px] mt-1 font-medium">{errorName}</p>
+            )}
           </div>
 
           <div>
@@ -233,7 +243,13 @@ export default function FormAssignment({ open, onClose, courseId, onSuccess }: P
 
         <div className="flex justify-end gap-3 mt-6">
           <button
-            onClick={onClose}
+            onClick={() => {
+              setName("");
+              setErrorName("");
+              setDueDate("");
+              setFile(null);
+              onClose();
+            }}
             disabled={submitting}
             className="border px-4 py-2 border-[#0D9488] text-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 disabled:opacity-50"
           >
@@ -259,3 +275,4 @@ export default function FormAssignment({ open, onClose, courseId, onSuccess }: P
     </div>
   );
 }
+

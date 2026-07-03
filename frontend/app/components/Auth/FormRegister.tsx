@@ -13,6 +13,7 @@ export default function FormRegister() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{name?: string, email?: string, phone?: string, password?: string, confirmPassword?: string}>({});
 
   const router = useRouter();
   const params = useParams();
@@ -22,14 +23,27 @@ export default function FormRegister() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      toast.error(t("confirmMismatch") || "Konfirmasi password tidak cocok");
+    // Client-side validation
+    const newErrors: {name?: string, email?: string, phone?: string, password?: string, confirmPassword?: string} = {};
+    if (!name.trim()) newErrors.name = t("errorNameEmpty");
+    if (!email.trim()) newErrors.email = t("errorEmailEmpty");
+    if (!phone.trim()) newErrors.phone = t("errorPhoneEmpty");
+    if (!password.trim()) newErrors.password = t("errorPasswordEmpty");
+    if (!confirmPassword.trim()) {
+      newErrors.confirmPassword = t("errorConfirmEmpty");
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = t("confirmMismatch");
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
+    setErrors({});
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/api/auth/register", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,10 +98,16 @@ export default function FormRegister() {
               id="register-name"
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors({ ...errors, name: undefined });
+              }}
               placeholder={t("namePlaceholder")}
-              className="text-xs text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488] mt-1"
+              className={`text-xs text-gray-700 p-3 w-full rounded border ${errors.name ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none mt-1`}
             />
+            {errors.name && (
+              <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.name}</p>
+            )}
           </div>
           <div>
             <span className="text-gray-700 text-xs pb-1">{t("email")} </span>
@@ -96,10 +116,16 @@ export default function FormRegister() {
               id="register-email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) setErrors({ ...errors, email: undefined });
+              }}
               placeholder={t("emailPlaceholder")}
-              className="text-xs text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488] mt-1"
+              className={`text-xs text-gray-700 p-3 w-full rounded border ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none mt-1`}
             />
+            {errors.email && (
+              <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.email}</p>
+            )}
           </div>
           <div>
             <span className="text-gray-700 text-xs pb-1">{t("phone")} </span>
@@ -108,10 +134,16 @@ export default function FormRegister() {
               id="register-phone"
               type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                if (errors.phone) setErrors({ ...errors, phone: undefined });
+              }}
               placeholder={t("phonePlaceholder")}
-              className="text-xs text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488] mt-1"
+              className={`text-xs text-gray-700 p-3 w-full rounded border ${errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none mt-1`}
             />
+            {errors.phone && (
+              <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.phone}</p>
+            )}
           </div>
           <div>
             <span className="text-gray-700 text-xs pb-1">{t("password")} </span>
@@ -120,10 +152,16 @@ export default function FormRegister() {
               id="register-password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (errors.password) setErrors({ ...errors, password: undefined });
+              }}
               placeholder={t("passwordPlaceholder")}
-              className="text-xs text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488] mt-1"
+              className={`text-xs text-gray-700 p-3 w-full rounded border ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none mt-1`}
             />
+            {errors.password && (
+              <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.password}</p>
+            )}
           </div>
           <div>
             <span className="text-gray-700 text-xs pb-1">
@@ -134,10 +172,16 @@ export default function FormRegister() {
               id="register-confirm-password"
               type="password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: undefined });
+              }}
               placeholder={t("confirmPlaceholder")}
-              className="text-xs text-gray-700 p-3 w-full rounded border border-gray-300 focus:outline-none focus:border-[#0D9488] mt-1"
+              className={`text-xs text-gray-700 p-3 w-full rounded border ${errors.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488]'} focus:outline-none mt-1`}
             />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-[11px] mt-1 font-medium">{errors.confirmPassword}</p>
+            )}
           </div>
           <button
             id="register-submit"
@@ -152,3 +196,4 @@ export default function FormRegister() {
     </div>
   );
 }
+

@@ -36,10 +36,10 @@ export default function DashboardSummary() {
     const fetchSummary = async () => {
       try {
         const [semRes, courseRes, moduleRes, assignRes] = await Promise.all([
-          fetch(`http://localhost:3001/api/semesters/${user.id}`),
-          fetch(`http://localhost:3001/api/courses/user/${user.id}`),
-          fetch(`http://localhost:3001/api/modules/user/${user.id}`),
-          fetch(`http://localhost:3001/api/assignments/user/${user.id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/semesters/${user.id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses/user/${user.id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules/user/${user.id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/assignments/user/${user.id}`),
         ]);
 
         const [sems, courses, modules, assignments] = await Promise.all([

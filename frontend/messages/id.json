@@ -134,6 +134,10 @@
     "loginFailed": "Email atau password salah",
     "enterEmail": "Silakan masukkan email Anda",
     "allFieldsRequired": "Semua kolom harus diisi",
+    "errorEmailEmpty": "Email tidak boleh kosong",
+    "errorPasswordEmpty": "Password tidak boleh kosong",
+    "errorOtpEmpty": "OTP tidak boleh kosong",
+    "errorNewPasswordEmpty": "Password baru tidak boleh kosong",
     "heroTagline": "Simpan dan Kelola Pembelajaranmu.",
     "heroDesc": "Semua modul, tugas, dan materi tersimpan rapi dalam satu tempat."
   },
@@ -156,6 +160,11 @@
     "registerSuccess": "Registrasi berhasil!",
     "registerFailed": "Gagal registrasi",
     "confirmMismatch": "Konfirmasi password tidak cocok",
+    "errorNameEmpty": "Nama tidak boleh kosong",
+    "errorEmailEmpty": "Email tidak boleh kosong",
+    "errorPhoneEmpty": "No. telepon tidak boleh kosong",
+    "errorPasswordEmpty": "Password tidak boleh kosong",
+    "errorConfirmEmpty": "Konfirmasi password tidak boleh kosong",
     "heroTagline": "Daftar dan Mulai Perjalanan Belajarmu.",
     "heroDesc": "Semua modul, tugas, dan materi tersimpan rapi dalam satu tempat."
   },
@@ -203,7 +212,8 @@
     "addCourse": "Tambah Mata Kuliah",
     "addSuccess": "Mata kuliah berhasil ditambahkan",
     "addFailed": "Gagal menambahkan",
-    "courseNamePlaceholder": "Nama Mata Kuliah"
+    "courseNamePlaceholder": "Nama Mata Kuliah",
+    "courseNameEmpty": "Nama mata kuliah tidak boleh kosong"
   },
   "FormModule": {
     "addModule": "Tambah Modul Baru",
@@ -246,5 +256,65 @@
     "deleteSemesterTitle": "Hapus Semester",
     "deleteSemesterConfirm1": "Yakin ingin menghapus semester ",
     "deleteSemesterConfirm2": "? Semua data mata kuliah di semester ini juga akan terhapus."
+  },
+  "Assignments": {
+    "noAssignments": "Belum Ada Tugas",
+    "noAssignmentsDesc": "Tambahkan tugas di dalam mata kuliah untuk mengelola deadline dan melacak penyelesaian.",
+    "backToDashboard": "Kembali ke Dashboard",
+    "unknownCourse": "Mata Kuliah Tidak Diketahui",
+    "assignmentCount": "{count} tugas",
+    "fileAvailable": "File tersedia",
+    "noFile": "Tidak ada file",
+    "preview": "Pratinjau",
+    "download": "Unduh"
+  },
+  "Modules": {
+    "noModules": "Belum Ada Modul",
+    "noModulesDesc": "Tambahkan modul di dalam mata kuliah untuk menyimpan catatan dan materi pembelajaran.",
+    "backToDashboard": "Kembali ke Dashboard",
+    "unknownCourse": "Mata Kuliah Tidak Diketahui",
+    "moduleCount": "{count} modul",
+    "fileAvailable": "File tersedia",
+    "noFile": "Tidak ada file",
+    "preview": "Pratinjau",
+    "download": "Unduh"
+  },
+  "DetailCourse": {
+    "defaultTitle": "Detail Mata Kuliah",
+    "subtitle": "Kelola modul pembelajaran dan tugas kuliah",
+    "tabModule": "Modul",
+    "tabAssignment": "Tugas",
+    "moduleListTitle": "Daftar Modul",
+    "moduleListDesc": "Materi pembelajaran untuk mata kuliah ini",
+    "addModule": "Tambah Modul",
+    "noModules": "Belum Ada Modul",
+    "noModulesDesc": "Tambahkan modul untuk menyimpan catatan, rangkuman materi, dan slide presentasi.",
+    "assignmentListTitle": "Daftar Tugas",
+    "assignmentListDesc": "Tugas dan latihan untuk mengukur pemahaman",
+    "addAssignment": "Tambah Tugas",
+    "noAssignments": "Belum Ada Tugas",
+    "noAssignmentsDesc": "Tambahkan tugas baru untuk mengelola deadline dan melacak status penyelesaiannya.",
+    "fileAvailable": "File tersedia",
+    "noFile": "Tidak ada file",
+    "preview": "Pratinjau",
+    "download": "Unduh",
+    "deleteModule": "Hapus Modul",
+    "deleteAssignment": "Hapus Tugas",
+    "deleteModuleConfirm": "Yakin ingin menghapus modul",
+    "deleteAssignmentConfirm": "Yakin ingin menghapus tugas",
+    "deleteIrreversible": "Tindakan ini tidak dapat dibatalkan.",
+    "deleteSuccess": "berhasil dihapus",
+    "deleteFailed": "Gagal menghapus",
+    "delete": "Hapus"
+  },
+  "Search": {
+    "placeholder": "Cari semester, mata kuliah, modul, atau tugas...",
+    "searching": "Mencari...",
+    "noResults": "Tidak ada hasil untuk \"{query}\"",
+    "semesters": "Semester",
+    "courses": "Mata Kuliah",
+    "modules": "Modul",
+    "assignments": "Tugas",
+    "loginRequired": "Silakan login terlebih dahulu untuk mencari."
   }
 }

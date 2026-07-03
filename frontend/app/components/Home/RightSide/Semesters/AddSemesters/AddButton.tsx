@@ -3,6 +3,7 @@
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import ModalSemester from "./ModalSemester";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onSuccess: () => void;
@@ -10,6 +11,7 @@ interface Props {
 
 export default function AddButton({ onSuccess }: Props) {
   const [openModal, setOpenModal] = useState(false);
+  const t = useTranslations("ModalSemester");
 
   return (
     <>
@@ -19,7 +21,7 @@ export default function AddButton({ onSuccess }: Props) {
       >
         <PlusIcon size={32} />
 
-        <span className="font-semibold">Tambah Semester</span>
+        <span className="font-semibold">{t("addSemester")}</span>
       </button>
 
       <ModalSemester

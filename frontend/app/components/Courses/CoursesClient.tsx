@@ -34,7 +34,7 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3001/api/courses/user/${user.id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/courses/user/${user.id}`
         );
         if (res.ok) {
           const data = await res.json();
@@ -69,7 +69,7 @@ export default function CoursesPage() {
     if (!confirmDelete) return;
     setDeleting(true);
     try {
-      const res = await fetch(`http://localhost:3001/api/courses/${confirmDelete.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses/${confirmDelete.id}`, {
         method: "DELETE",
       });
 

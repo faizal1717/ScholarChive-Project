@@ -14,6 +14,7 @@ interface Props {
 
 export default function FormModule({ open, onClose, courseId, onSuccess }: Props) {
   const [name, setName] = useState("");
+  const [errorName, setErrorName] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [isDragActive, setIsDragActive] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -43,6 +44,7 @@ export default function FormModule({ open, onClose, courseId, onSuccess }: Props
       if (!name.trim()) {
         const baseName = selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.')) || selectedFile.name;
         setName(baseName);
+        if (errorName) setErrorName("");
       }
     }
   };
@@ -53,6 +55,7 @@ export default function FormModule({ open, onClose, courseId, onSuccess }: Props
     if (selectedFile && !name.trim()) {
       const baseName = selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.')) || selectedFile.name;
       setName(baseName);
+      if (errorName) setErrorName("");
     }
   };
 
@@ -80,7 +83,7 @@ export default function FormModule({ open, onClose, courseId, onSuccess }: Props
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      toast.error(t("moduleNameEmpty"));
+      setErrorName(t("moduleNameEmpty") || "Nama modul tidak boleh kosong");
       return;
     }
 
@@ -95,7 +98,7 @@ export default function FormModule({ open, onClose, courseId, onSuccess }: Props
         formData.append("file", file);
       }
 
-      const res = await fetch("http://localhost:3001/api/modules", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/modules`, {
         method: "POST",
         body: formData,
       });
@@ -103,6 +106,7 @@ export default function FormModule({ open, onClose, courseId, onSuccess }: Props
       if (res.ok) {
         toast.success(t("addSuccess"));
         setName("");
+        setErrorName("");
         setFile(null);
         onClose();
         if (onSuccess) {
@@ -133,14 +137,20 @@ export default function FormModule({ open, onClose, courseId, onSuccess }: Props
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-              {t("moduleName")}
+              {t("moduleName")} <span className="text-red-400">*</span>
             </label>
             <input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errorName) setErrorName("");
+              }}
               placeholder={t("moduleName")}
-              className="w-full border rounded-lg p-3 focus:outline-0 border-gray-300 focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488]"
+              className={`w-full border rounded-lg p-3 focus:outline-0 ${errorName ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-300 focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488]'}`}
             />
+            {errorName && (
+              <p className="text-red-500 text-[11px] mt-1 font-medium">{errorName}</p>
+            )}
           </div>
 
           <div>
@@ -179,7 +189,7 @@ export default function FormModule({ open, onClose, courseId, onSuccess }: Props
             ) : (
               <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 flex items-center justify-between">
                 <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="bg-[#0D9488]/10 p-2.5 rounded-lg text-[#0D9488] flex-shrink-0">
+                  <div className="bg-[#0D9488]/10 p-2.5 rounded-lg text-[#0D9488] shrink-0">
                     <FileTextIcon size={20} />
                   </div>
                   <div className="overflow-hidden">
@@ -216,7 +226,12 @@ export default function FormModule({ open, onClose, courseId, onSuccess }: Props
 
         <div className="flex justify-end gap-3 mt-6">
           <button
-            onClick={onClose}
+            onClick={() => {
+              setName("");
+              setErrorName("");
+              setFile(null);
+              onClose();
+            }}
             disabled={submitting}
             className="border px-4 py-2 border-[#0D9488] text-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 disabled:opacity-50"
           >
