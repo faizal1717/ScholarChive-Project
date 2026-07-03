@@ -16,8 +16,16 @@ import {
 interface SearchResults {
   semesters: Array<{ _id: string; name: string }>;
   courses: Array<{ _id: string; name: string }>;
-  modules: Array<{ _id: string; name: string; courseId?: { _id: string; name: string } | string }>;
-  assignments: Array<{ _id: string; name: string; courseId?: { _id: string; name: string } | string }>;
+  modules: Array<{
+    _id: string;
+    name: string;
+    courseId?: { _id: string; name: string } | string;
+  }>;
+  assignments: Array<{
+    _id: string;
+    name: string;
+    courseId?: { _id: string; name: string } | string;
+  }>;
 }
 
 export default function Search() {
@@ -50,7 +58,10 @@ export default function Search() {
   useEffect(() => {
     // Click outside handler
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setFocused(false);
       }
     };
@@ -72,7 +83,7 @@ export default function Search() {
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/search?q=${encodeURIComponent(val)}&userId=${userId}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/search?q=${encodeURIComponent(val)}&userId=${userId}`,
       );
       if (res.ok) {
         const data = await res.json();
@@ -119,12 +130,12 @@ export default function Search() {
 
   return (
     <div ref={containerRef} className="relative w-full max-w-lg mx-auto z-55">
-      {/* Search Input Container */}
       <div className="relative flex items-center w-full">
         <SearchIcon
           size={18}
-          className={`absolute left-3.5 transition-colors duration-200 ${focused ? "text-[#0D9488]" : "text-gray-400"
-            }`}
+          className={`absolute left-3.5 transition-colors duration-200 ${
+            focused ? "text-[#0D9488]" : "text-gray-400"
+          }`}
         />
         <input
           type="text"
@@ -135,7 +146,10 @@ export default function Search() {
           className="w-full text-sm text-gray-700 border border-gray-300 rounded-lg pl-10 pr-10 py-2.5 outline-none "
         />
         {loading ? (
-          <Loader2Icon size={18} className="absolute right-3.5 text-[#0D9488] animate-spin" />
+          <Loader2Icon
+            size={18}
+            className="absolute right-3.5 text-[#0D9488] animate-spin"
+          />
         ) : query ? (
           <button
             onClick={handleClear}
@@ -164,7 +178,6 @@ export default function Search() {
             </div>
           ) : results ? (
             <div className="max-h-[380px] overflow-y-auto divide-y divide-gray-100 py-1 scrollbar-thin">
-              {/* Semesters Category */}
               {results.semesters.length > 0 && (
                 <div className="p-2">
                   <div className="px-3 py-1.5 text-[10px] font-bold tracking-wider text-gray-400 uppercase flex items-center gap-1.5">
@@ -175,10 +188,14 @@ export default function Search() {
                     {results.semesters.map((sem) => (
                       <button
                         key={sem._id}
-                        onClick={() => handleItemClick(`/${locale}/detail-semester?id=${sem._id}`)}
+                        onClick={() =>
+                          handleItemClick(
+                            `/${locale}/detail-semester?id=${sem._id}`,
+                          )
+                        }
                         className="w-full text-left px-3 py-2 text-sm text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition cursor-pointer flex items-center gap-2"
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-purple-500 flex-shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
                         {sem.name}
                       </button>
                     ))}
@@ -195,10 +212,14 @@ export default function Search() {
                     {results.courses.map((course) => (
                       <button
                         key={course._id}
-                        onClick={() => handleItemClick(`/${locale}/detail-course?id=${course._id}`)}
+                        onClick={() =>
+                          handleItemClick(
+                            `/${locale}/detail-course?id=${course._id}`,
+                          )
+                        }
                         className="w-full text-left px-3 py-2 text-sm text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition cursor-pointer flex items-center gap-2"
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 flex-shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shrink-0" />
                         {course.name}
                       </button>
                     ))}
@@ -213,21 +234,29 @@ export default function Search() {
                   </div>
                   <div className="space-y-0.5">
                     {results.modules.map((mod) => {
-                      const courseName = typeof mod.courseId === "object" ? mod.courseId.name : "";
+                      const courseName =
+                        typeof mod.courseId === "object"
+                          ? mod.courseId.name
+                          : "";
                       return (
                         <button
                           key={mod._id}
                           onClick={() =>
                             handleItemClick(
-                              `/${locale}/detail-course?id=${typeof mod.courseId === "object" ? mod.courseId._id || "" : mod.courseId
-                              }&tab=module`
+                              `/${locale}/detail-course?id=${
+                                typeof mod.courseId === "object"
+                                  ? mod.courseId._id || ""
+                                  : mod.courseId
+                              }&tab=module`,
                             )
                           }
                           className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 transition cursor-pointer flex items-center justify-between gap-3"
                         >
                           <div className="flex items-center gap-2 min-w-0">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
-                            <span className="text-sm text-gray-700 font-medium truncate">{mod.name}</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                            <span className="text-sm text-gray-700 font-medium truncate">
+                              {mod.name}
+                            </span>
                           </div>
                           {courseName && (
                             <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full truncate max-w-[120px]">
@@ -248,21 +277,29 @@ export default function Search() {
                   </div>
                   <div className="space-y-0.5">
                     {results.assignments.map((ass) => {
-                      const courseName = typeof ass.courseId === "object" ? ass.courseId.name : "";
+                      const courseName =
+                        typeof ass.courseId === "object"
+                          ? ass.courseId.name
+                          : "";
                       return (
                         <button
                           key={ass._id}
                           onClick={() =>
                             handleItemClick(
-                              `/${locale}/detail-course?id=${typeof ass.courseId === "object" ? ass.courseId._id || "" : ass.courseId
-                              }&tab=assignment`
+                              `/${locale}/detail-course?id=${
+                                typeof ass.courseId === "object"
+                                  ? ass.courseId._id || ""
+                                  : ass.courseId
+                              }&tab=assignment`,
                             )
                           }
                           className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 transition cursor-pointer flex items-center justify-between gap-3"
                         >
                           <div className="flex items-center gap-2 min-w-0">
-                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />
-                            <span className="text-sm text-gray-700 font-medium truncate">{ass.name}</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+                            <span className="text-sm text-gray-700 font-medium truncate">
+                              {ass.name}
+                            </span>
                           </div>
                           {courseName && (
                             <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full truncate max-w-[120px]">
